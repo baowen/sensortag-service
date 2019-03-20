@@ -19,11 +19,19 @@ function updateAccelerometerChange(target, sensor, x, y, z) {
     z
   });
 }
+function updateGyroscopeChange(target, sensor, x, y, z) {
+  target.emit('GYROSCOPE_CHANGE', {
+    sensorId: sensor.getId(),
+    x,
+    y,
+    z
+  });
+}
 
 function onDiscover(sensorTag) {
   console.log('onDiscover:', sensorTag.uuid);
   sensorTag.connectAndSetUp(function() {
-    logger.info('on connectAndSetUp: ', sensorTag.uuid);
+    logger.info('on connectAndSetUp:  ' + sensorTag.uuid);
     var sensor = new Sensor(sensorTag);
     sensors.push(sensor);
     updateSensors(io);
@@ -33,11 +41,14 @@ function onDiscover(sensorTag) {
       logger.debug('accelerometerChange', x, y, z);
       updateAccelerometerChange(io, sensor, x, y, z);
     });
+    sensor.on('gyroscopeChange', (x, y, z) => {
+      //console.log('gyroscopeChange:' + x + " " + y + " " + z)
+      updateGyroscopeChange(io, sensor, x, y, z);
+    });
     sensor.on('buttonPress', () => {
       logger.debug('buttonPress');
       updateButton(io, sensor);
     });
-    
   });
 }
 

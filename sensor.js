@@ -6,6 +6,9 @@ const logger = require('./logger');
 
 const accelerometerPeriod = 200;
 const accelerometerPrecision = 2;
+const gyroscopePeriod = 200;
+const gyroscopePrecision = 2;
+
 const movingAverageTimeInterval = 2000;
 const accelerometerUpdateMinInterval = 100;
 
@@ -26,10 +29,13 @@ class Sensor extends EventEmitter {
     this.rightButtonPressed = false;
     this.addListeners();
     this.accelerometerUpdateTimestamp=0;
+    this.gyroscopeUpdateTimestamp=0;
     this.movingAverageX = MovingAverage(movingAverageTimeInterval)
     this.movingAverageY = MovingAverage(movingAverageTimeInterval)
     this.movingAverageZ = MovingAverage(movingAverageTimeInterval)
-
+    this.movingGyroAverageX = MovingAverage(movingAverageTimeInterval)
+    this.movingGyroAverageY = MovingAverage(movingAverageTimeInterval)
+    this.movingGyroAverageZ = MovingAverage(movingAverageTimeInterval)
   }
 
   getId() {
@@ -54,6 +60,22 @@ class Sensor extends EventEmitter {
         z = this.movingAverageZ.movingAverage().toFixed(accelerometerPrecision);
         logger.debug('Sensor - on accelerometerChange', x, y, z);
         _this.emit("accelerometerChange", x, y, z);
+      // }
+    });
+    //Not sure if the moving average is the best calculation for the gyroscope - just temporarily used to to create gyro
+    //listener following the same approach used for accelerometer
+    this.sensorTag.on('gyroscopeChange', (x, y, z) => {
+      var timestamp = Date.now();
+      this.movingGyroAverageX.push(timestamp, x);
+      this.movingGyroAverageY.push(timestamp, y);
+      this.movingGyroAverageZ.push(timestamp, z);
+      // if (timestamp - this.accelerometerUpdateTimestamp > accelerometerUpdateMinInterval) {
+        this.gyroscopeUpdateTimestamp = timestamp;
+        x = this.movingGyroAverageX.movingAverage().toFixed(gyroscopePrecision);
+        y = this.movingGyroAverageY.movingAverage().toFixed(gyroscopePrecision);
+        z = this.movingGyroAverageZ.movingAverage().toFixed(gyroscopePrecision);
+        logger.debug('Sensor - on gyroscopeChange', x, y, z);
+        _this.emit("gyroscopeChange", x, y, z);
       // }
     });
 
@@ -91,6 +113,31 @@ class Sensor extends EventEmitter {
         });
       });
 
+      _this.sensorTag.notifySimpleKey(function(error){
+        logger.debug('Sensor.start - set notifySimpleKey');
+        if (error) {
+          logger.error(error);
+        }
+      });
+    });
+    this.sensorTag.enableGyroscope(function(error) {
+      logger.debug('Sensor.start - set enableGyroscope');
+      if (error) {
+        console.error(error);
+      }
+      _this.sensorTag.setGyroscopePeriod(gyroscopePeriod, function(error) {
+        logger.debug('Sensor.start - set gyroscopePeriod');
+        if (error) {
+          logger.error(error);
+        }
+        _this.sensorTag.notifyGyroscope(function(error) {
+          console.log('Sensor.start - set notifyGyroscope');
+          if (error) {
+            logger.error(error);
+          }
+          safeCallback(callback);
+        });
+      });
       _this.sensorTag.notifySimpleKey(function(error){
         logger.debug('Sensor.start - set notifySimpleKey');
         if (error) {
