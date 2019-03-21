@@ -6,7 +6,7 @@ const logger = require('./logger');
 
 const accelerometerPeriod = 200;
 const accelerometerPrecision = 2;
-const gyroscopePeriod = 200;
+const gyroscopePeriod = 500;
 const gyroscopePrecision = 2;
 
 const movingAverageTimeInterval = 2000;
@@ -29,13 +29,10 @@ class Sensor extends EventEmitter {
     this.rightButtonPressed = false;
     this.addListeners();
     this.accelerometerUpdateTimestamp=0;
-    this.gyroscopeUpdateTimestamp=0;
     this.movingAverageX = MovingAverage(movingAverageTimeInterval)
     this.movingAverageY = MovingAverage(movingAverageTimeInterval)
     this.movingAverageZ = MovingAverage(movingAverageTimeInterval)
-    this.movingGyroAverageX = MovingAverage(movingAverageTimeInterval)
-    this.movingGyroAverageY = MovingAverage(movingAverageTimeInterval)
-    this.movingGyroAverageZ = MovingAverage(movingAverageTimeInterval)
+
   }
 
   getId() {
@@ -65,17 +62,8 @@ class Sensor extends EventEmitter {
     //Not sure if the moving average is the best calculation for the gyroscope - just temporarily used to to create gyro
     //listener following the same approach used for accelerometer
     this.sensorTag.on('gyroscopeChange', (x, y, z) => {
-      var timestamp = Date.now();
-      this.movingGyroAverageX.push(timestamp, x);
-      this.movingGyroAverageY.push(timestamp, y);
-      this.movingGyroAverageZ.push(timestamp, z);
-      // if (timestamp - this.accelerometerUpdateTimestamp > accelerometerUpdateMinInterval) {
-        this.gyroscopeUpdateTimestamp = timestamp;
-        x = this.movingGyroAverageX.movingAverage().toFixed(gyroscopePrecision);
-        y = this.movingGyroAverageY.movingAverage().toFixed(gyroscopePrecision);
-        z = this.movingGyroAverageZ.movingAverage().toFixed(gyroscopePrecision);
-        logger.debug('Sensor - on gyroscopeChange', x, y, z);
-        _this.emit("gyroscopeChange", x, y, z);
+      //console.log('x: ' + x + ' y: ' + y + ' z: ' + z); 
+        _this.emit("gyroscopeChange", x.toFixed(gyroscopePrecision), y.toFixed(gyroscopePrecision), z.toFixed(gyroscopePrecision));
       // }
     });
 
