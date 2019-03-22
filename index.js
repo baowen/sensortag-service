@@ -4,6 +4,7 @@ var Sensor = require('./sensor');
 var logger = require('./logger');
 
 var sensors = [];
+var sensorTagId = "b3a9b66814634faeae29d1c95faca152"
 
 function updateSensors(target) {
   target.emit('UPDATE_SENSORS', sensors.map(sensor => sensor.getId()));
@@ -28,6 +29,7 @@ function updateGyroscopeChange(target, sensor, x, y, z) {
   });
 }
 
+//sensorTagId = b3a9b66814634faeae29d1c95faca152
 function onDiscover(sensorTag) {
   console.log('onDiscover:', sensorTag.uuid);
   sensorTag.connectAndSetUp(function() {
@@ -51,8 +53,10 @@ function onDiscover(sensorTag) {
     });
   });
 }
+//Accelerometer - x: 0.19, y: -0.12, z:0.78
+//Gyroscope - x: -2.91, y: -6.54, z: 2.37
 
-SensorTag.discoverAll(onDiscover);
+SensorTag.discoverById(sensorTagId, onDiscover);
 
 io.on('connection', socket => {
   logger.info('Socket client connected');
