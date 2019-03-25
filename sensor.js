@@ -71,6 +71,11 @@ class Sensor extends EventEmitter {
       _this.emit("irTemperatureChange", objectTemperature.toFixed(1), ambientTemperature.toFixed(1));
     });
 
+    this.sensorTag.on('humidityChange', function(temp, humidity) {
+      //console.log('HumidityChange: temp: ' + temp.toFixed(1) + " humidity: " + humidity.toFixed(1));
+      _this.emit("humidityChange", temp.toFixed(1), humidity.toFixed(1));
+    });
+
     this.sensorTag.on('simpleKeyChange', function(left, right, reedRelay) {
       // console.log(this.id, this.uuid, left, right, reedRelay);
       logger.debug('Sensor - on simpleKeyChange');
@@ -113,7 +118,7 @@ class Sensor extends EventEmitter {
       });
     });
     this.sensorTag.enableIrTemperature(function(error) {
-      logger.debug('Sensor.start - set enableAccelerometer');
+      logger.debug('Sensor.start - set enableIrTemperature');
       if (error) {
         console.error(error);
       }
@@ -127,6 +132,28 @@ class Sensor extends EventEmitter {
           //   _this.sensorTag.unnotifyIrTemperature(callback);
           // }, 5000);
           logger.debug('Sensor.start - emitting temperature');
+          if (error) {
+            logger.error(error);
+          }
+        });
+      });
+    });
+
+    this.sensorTag.enableHumidity(function(error) {
+      logger.debug('Sensor.start - set enableHumidity');
+      if (error) {
+        console.error(error);
+      }
+      console.log('setHumidity');
+
+      _this.sensorTag.setHumidityPeriod(1000, function(error) {
+        console.log('notifyHumidity');
+        _this.sensorTag.notifyHumidity(function(error) {
+          // setTimeout(function() {
+          //   console.log('unnotifyIrTemperature');
+          //   _this.sensorTag.unnotifyIrTemperature(callback);
+          // }, 5000);
+          logger.debug('Sensor.start - emitting humidity');
           if (error) {
             logger.error(error);
           }

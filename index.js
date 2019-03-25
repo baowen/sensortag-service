@@ -27,6 +27,13 @@ function updateTemperatureChange(target, sensor, objectTemp, ambientTemp) {
     ambientTemp,
   });
 }
+function updateHumidityChange(target, sensor, temp, humidity) {
+  target.emit('HUMIDITY_CHANGE', {
+    sensorId: sensor.getId(),
+    temp,
+    humidity,
+  });
+}
 function updateGyroscopeChange(target, sensor, x, y, z) {
   target.emit('GYROSCOPE_CHANGE', {
     sensorId: sensor.getId(),
@@ -53,6 +60,10 @@ function onDiscover(sensorTag) {
     sensor.on('irTemperatureChange', (objectTemp, ambientTemp) => {
       //console.log('irTemperatureChange:' + objectTemp + " " + ambientTemp);
       updateTemperatureChange(io, sensor, objectTemp, ambientTemp);
+    });
+    sensor.on('humidityChange', (temperature, humidity) => {
+      //console.log('irTemperatureChange:' + objectTemp + " " + ambientTemp);
+      updateHumidityChange(io, sensor, temperature, humidity);
     });
     sensor.on('gyroscopeChange', (x, y, z) => {
       //console.log('gyroscopeChange:' + x + " " + y + " " + z)

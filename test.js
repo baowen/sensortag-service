@@ -159,7 +159,6 @@ SensorTag.discover(function(sensorTag) {
           sensorTag.readHumidity(function(error, temperature, humidity) {
             console.log('\ttemperature = %d °C', temperature.toFixed(1));
             console.log('\thumidity = %d %', humidity.toFixed(1));
-
             callback();
           });
         } else {
