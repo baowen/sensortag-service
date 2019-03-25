@@ -8,6 +8,9 @@ const accelerometerPeriod = 200;
 const accelerometerPrecision = 2;
 const gyroscopePeriod = 500;
 const gyroscopePrecision = 2;
+const magnetometerPeriod = 200;
+const magnetometerPrecision = 1;
+
 
 const movingAverageTimeInterval = 2000;
 const accelerometerUpdateMinInterval = 100;
@@ -66,6 +69,12 @@ class Sensor extends EventEmitter {
         _this.emit("gyroscopeChange", x.toFixed(gyroscopePrecision), y.toFixed(gyroscopePrecision), z.toFixed(gyroscopePrecision));
       // }
     });
+    this.sensorTag.on('magnetometerChange', (x, y, z) => {
+      // console.log('\tx = %d μT', x.toFixed(1));
+      // console.log('\ty = %d μT', y.toFixed(1));
+      // console.log('\tz = %d μT', z.toFixed(1));
+      _this.emit("magnetometerChange", x.toFixed(magnetometerPrecision), y.toFixed(magnetometerPrecision), z.toFixed(magnetometerPrecision));
+    });
 
     this.sensorTag.on('irTemperatureChange', function(objectTemperature, ambientTemperature) {
       _this.emit("irTemperatureChange", objectTemperature.toFixed(1), ambientTemperature.toFixed(1));
@@ -103,6 +112,32 @@ class Sensor extends EventEmitter {
         }
         _this.sensorTag.notifyAccelerometer(function(error) {
           console.log('Sensor.start - set notifyAccelerometer');
+          if (error) {
+            logger.error(error);
+          }
+          safeCallback(callback);
+        });
+      });
+
+      _this.sensorTag.notifySimpleKey(function(error){
+        logger.debug('Sensor.start - set notifySimpleKey');
+        if (error) {
+          logger.error(error);
+        }
+      });
+    });
+    this.sensorTag.enableMagnetometer(function(error) {
+      logger.debug('Sensor.start - set enableMagnetometer');
+      if (error) {
+        console.error(error);
+      }
+      _this.sensorTag.setMagnetometerPeriod(magnetometerPeriod, function(error) {
+        logger.debug('Sensor.start - set magnetometerPeriod');
+        if (error) {
+          logger.error(error);
+        }
+        _this.sensorTag.notifyMagnetometer(function(error) {
+          console.log('Sensor.start - set notifyMagnetometer');
           if (error) {
             logger.error(error);
           }

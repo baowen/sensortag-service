@@ -42,6 +42,14 @@ function updateGyroscopeChange(target, sensor, x, y, z) {
     z
   });
 }
+function updateMagnetometerChange(target, sensor, x, y, z) {
+  target.emit('MAGNETOMETER_CHANGE', {
+    sensorId: sensor.getId(),
+    x,
+    y,
+    z
+  });
+}
 
 //sensorTagId = b3a9b66814634faeae29d1c95faca152
 function onDiscover(sensorTag) {
@@ -64,6 +72,10 @@ function onDiscover(sensorTag) {
     sensor.on('humidityChange', (temperature, humidity) => {
       //console.log('irTemperatureChange:' + objectTemp + " " + ambientTemp);
       updateHumidityChange(io, sensor, temperature, humidity);
+    });
+    sensor.on('magnetometerChange', (x, y, z) => {
+      logger.debug('magnetometerChange', x, y, z);
+      updateMagnetometerChange(io, sensor, x, y, z);
     });
     sensor.on('gyroscopeChange', (x, y, z) => {
       //console.log('gyroscopeChange:' + x + " " + y + " " + z)
