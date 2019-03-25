@@ -67,6 +67,10 @@ class Sensor extends EventEmitter {
       // }
     });
 
+    this.sensorTag.on('irTemperatureChange', function(objectTemperature, ambientTemperature) {
+      _this.emit("irTemperatureChange", objectTemperature.toFixed(1), ambientTemperature.toFixed(1));
+    });
+
     this.sensorTag.on('simpleKeyChange', function(left, right, reedRelay) {
       // console.log(this.id, this.uuid, left, right, reedRelay);
       logger.debug('Sensor - on simpleKeyChange');
@@ -108,6 +112,28 @@ class Sensor extends EventEmitter {
         }
       });
     });
+    this.sensorTag.enableIrTemperature(function(error) {
+      logger.debug('Sensor.start - set enableAccelerometer');
+      if (error) {
+        console.error(error);
+      }
+      console.log('setIrTemperaturePeriod');
+
+      _this.sensorTag.setIrTemperaturePeriod(1000, function(error) {
+        console.log('notifyIrTemperature');
+        _this.sensorTag.notifyIrTemperature(function(error) {
+          // setTimeout(function() {
+          //   console.log('unnotifyIrTemperature');
+          //   _this.sensorTag.unnotifyIrTemperature(callback);
+          // }, 5000);
+          logger.debug('Sensor.start - emitting temperature');
+          if (error) {
+            logger.error(error);
+          }
+        });
+      });
+    });
+
     this.sensorTag.enableGyroscope(function(error) {
       logger.debug('Sensor.start - set enableGyroscope');
       if (error) {

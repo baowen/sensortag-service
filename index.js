@@ -20,6 +20,13 @@ function updateAccelerometerChange(target, sensor, x, y, z) {
     z
   });
 }
+function updateTemperatureChange(target, sensor, objectTemp, ambientTemp) {
+  target.emit('TEMPERATURE_CHANGE', {
+    sensorId: sensor.getId(),
+    objectTemp,
+    ambientTemp,
+  });
+}
 function updateGyroscopeChange(target, sensor, x, y, z) {
   target.emit('GYROSCOPE_CHANGE', {
     sensorId: sensor.getId(),
@@ -42,6 +49,10 @@ function onDiscover(sensorTag) {
     sensor.on('accelerometerChange', (x, y, z) => {
       logger.debug('accelerometerChange', x, y, z);
       updateAccelerometerChange(io, sensor, x, y, z);
+    });
+    sensor.on('irTemperatureChange', (objectTemp, ambientTemp) => {
+      //console.log('irTemperatureChange:' + objectTemp + " " + ambientTemp);
+      updateTemperatureChange(io, sensor, objectTemp, ambientTemp);
     });
     sensor.on('gyroscopeChange', (x, y, z) => {
       //console.log('gyroscopeChange:' + x + " " + y + " " + z)
