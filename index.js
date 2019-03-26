@@ -20,7 +20,7 @@ function updateAccelerometerChange(target, sensor, x, y, z) {
   let sy = Math.abs(y) || 0;
   let sz = Math.abs(z) || 0;
   let maxacc = sx + sy + sz;
-  console.log( 'max acceleration '+ maxxacc);
+  console.log( 'max acceleration '+ maxacc);
   let car_acc = (maxacc - 1) * 9.8;
   console.log('acceleration : ' + car_acc);
 
