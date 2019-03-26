@@ -13,11 +13,13 @@ function updateButton(target, sensor) {
   target.emit('BUTTON_PRESS', sensor.getId());
 }
 function updateAccelerometerChange(target, sensor, x, y, z) {
+
+  let maxacc = x + y + z;
+  let car_acc = (maxacc - 1) * 9.8;
+
   target.emit('ACCELEROMETER_CHANGE', {
     sensorId: sensor.getId(),
-    x,
-    y,
-    z
+    car_acc
   });
 }
 function updateTemperatureChange(target, sensor, objectTemp, ambientTemp) {
@@ -78,7 +80,7 @@ function onDiscover(sensorTag) {
       updateMagnetometerChange(io, sensor, x, y, z);
     });
     sensor.on('gyroscopeChange', (x, y, z) => {
-      //console.log('gyroscopeChange:' + x + " " + y + " " + z)
+      console.log('gyroscopeChange:' + x + " " + y + " " + z)
       updateGyroscopeChange(io, sensor, x, y, z);
     });
     sensor.on('buttonPress', () => {
