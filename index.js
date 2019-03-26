@@ -14,9 +14,14 @@ function updateButton(target, sensor) {
 }
 function updateAccelerometerChange(target, sensor, x, y, z) {
 
-  let maxacc = x + y + z;
-  let car_acc = (maxacc - 1) * 9.8;
 
+  console.log('x ' + 'y ' + z );
+  let sx = Math.abs(x) || 0;
+  let sy = Math.abs(y) || 0;
+  let sz = Math.abs(z) || 0;
+  let maxacc = sx + sy + sz;
+  console.log( 'max acceleration '+ maxxacc);
+  let car_acc = (maxacc - 1) * 9.8;
   console.log('acceleration : ' + car_acc);
 
   target.emit('ACCELEROMETER_CHANGE', {
