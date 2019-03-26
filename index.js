@@ -4,8 +4,8 @@ var Sensor = require('./sensor');
 var logger = require('./logger');
 
 var sensors = [];
-var sensorTagId = "b3a9b66814634faeae29d1c95faca152"
-
+//var sensorTagId = "b3a9b66814634faeae29d1c95faca152"
+var sensorTagId = "143d554458f04578b8b17fbd96c02c56"
 function updateSensors(target) {
   target.emit('UPDATE_SENSORS', sensors.map(sensor => sensor.getId()));
 }
@@ -15,13 +15,14 @@ function updateButton(target, sensor) {
 function updateAccelerometerChange(target, sensor, x, y, z) {
 
 
-  console.log('x ' + 'y ' + z );
   let sx = Math.abs(x) || 0;
   let sy = Math.abs(y) || 0;
   let sz = Math.abs(z) || 0;
   let maxacc = sx + sy + sz;
-  console.log( 'max acceleration '+ maxacc);
-  let car_acc = (maxacc - 1) * 9.8;
+  //console.log( 'max acceleration '+ maxacc);
+  let correction = 1.8;
+ // console.log(Math.abs((maxacc - 1) * 9.8));
+  let car_acc = Math.round(Math.abs((maxacc - 1) * 9.8 - correction ));
   console.log('acceleration : ' + car_acc);
 
   target.emit('ACCELEROMETER_CHANGE', {
